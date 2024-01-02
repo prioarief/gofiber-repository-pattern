@@ -8,8 +8,8 @@ import (
 )
 
 // type BookService interface {
-// 	GetBooks() ([]entities.Book, error)
-// 	GetBookById(id int) (entities.Book, error)
+// 	List() ([]entities.Book, error)
+// 	Get(id int) (entities.Book, error)
 // }
 
 // type bookService struct {
@@ -25,8 +25,8 @@ func NewBookService(r *repositories.BookRepository, validate *validator.Validate
 	return &BookService{Repository: r, Validate: validate}
 }
 
-func (s *BookService) GetBooks() ([]models.BookResponse, error) {
-	books, err := s.Repository.GetBooks()
+func (s *BookService) List() ([]models.BookResponse, error) {
+	books, err := s.Repository.List()
 	if err != nil {
 		return nil, err
 	}
@@ -39,8 +39,8 @@ func (s *BookService) GetBooks() ([]models.BookResponse, error) {
 	return newBooks, nil
 }
 
-func (s *BookService) GetBookById(id int) (*models.BookResponse, error) {
-	book, err := s.Repository.GetBookById(id)
+func (s *BookService) Get(id int) (*models.BookResponse, error) {
+	book, err := s.Repository.Get(id)
 	if err != nil {
 		return &models.BookResponse{}, err
 	}

@@ -19,8 +19,8 @@ func NewBookHandler(s *services.BookService) *BookHandler {
 	}
 }
 
-func (b *BookHandler) GetBooks(c *fiber.Ctx) error {
-	books, err := b.Service.GetBooks()
+func (b *BookHandler) List(c *fiber.Ctx) error {
+	books, err := b.Service.List()
 	if err != nil {
 		return fiber.ErrInternalServerError
 	}
@@ -32,13 +32,13 @@ func (b *BookHandler) GetBooks(c *fiber.Ctx) error {
 	})
 }
 
-func (b *BookHandler) GetBookById(c *fiber.Ctx) error {
+func (b *BookHandler) Get(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return fiber.ErrBadRequest
 	}
 
-	book, err := b.Service.GetBookById(id)
+	book, err := b.Service.Get(id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return fiber.ErrNotFound
@@ -81,7 +81,7 @@ func (b *BookHandler) Delete(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	_, err = b.Service.GetBookById(id)
+	_, err = b.Service.Get(id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return fiber.ErrNotFound
@@ -107,7 +107,7 @@ func (b *BookHandler) Update(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	_, err = b.Service.GetBookById(id)
+	_, err = b.Service.Get(id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return fiber.ErrNotFound

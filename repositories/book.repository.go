@@ -9,8 +9,8 @@ import (
 )
 
 // type BookRepository interface {
-// 	GetBooks() ([]entities.Book, error)
-// 	GetBookById(id int) (entities.Book, error)
+// 	List() ([]entities.Book, error)
+// 	Get(id int) (entities.Book, error)
 // }
 
 // type bookRepository struct {
@@ -25,7 +25,7 @@ func NewBookRepository(db *sql.DB) *BookRepository {
 	return &BookRepository{DB: db}
 }
 
-func (r *BookRepository) GetBooks() ([]entities.Book, error) {
+func (r *BookRepository) List() ([]entities.Book, error) {
 	rows, err := r.DB.Query("SELECT * FROM books")
 	if err != nil {
 		return nil, fiber.ErrInternalServerError
@@ -45,7 +45,7 @@ func (r *BookRepository) GetBooks() ([]entities.Book, error) {
 	return books, nil
 }
 
-func (r *BookRepository) GetBookById(id int) (entities.Book, error) {
+func (r *BookRepository) Get(id int) (entities.Book, error) {
 	var book entities.Book
 
 	row := r.DB.QueryRow("SELECT * FROM books WHERE id = ?", id)

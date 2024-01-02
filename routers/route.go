@@ -11,8 +11,8 @@ type RouteConfig struct {
 }
 
 func (c *RouteConfig) Setup() {
-	c.App.Get("/api/books", c.BookHandler.GetBooks)
-	c.App.Get("/api/books/:id", c.BookHandler.GetBookById)
+	c.App.Get("/api/books", c.BookHandler.List)
+	c.App.Get("/api/books/:id", c.BookHandler.Get)
 	c.App.Post("/api/books", c.BookHandler.Create)
 	c.App.Delete("/api/books/:id", c.BookHandler.Delete)
 	c.App.Put("/api/books/:id", c.BookHandler.Update)
