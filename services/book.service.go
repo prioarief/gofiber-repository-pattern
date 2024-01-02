@@ -60,3 +60,25 @@ func (s *BookService) Create(request *models.BookRequest) error {
 
 	return nil
 }
+
+func (s *BookService) Delete(id int) error {
+	err := s.Repository.Delete(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *BookService) Update(id int, request *models.BookRequest) error {
+	if err := s.Validate.Struct(request); err != nil {
+		return err
+	}
+
+	err := s.Repository.Update(id, request)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

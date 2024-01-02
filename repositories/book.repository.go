@@ -64,3 +64,21 @@ func (r *BookRepository) Create(request *models.BookRequest) error {
 
 	return nil
 }
+
+func (r *BookRepository) Update(id int, request *models.BookRequest) error {
+	_, err := r.DB.Exec("UPDATE books SET title = ?, description = ?, price = ? WHERE id = ?", request.Title, request.Description, request.Price, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *BookRepository) Delete(id int) error {
+	_, err := r.DB.Exec("DELETE FROM books WHERE id = ?", id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -38,7 +38,7 @@ func (b *BookHandler) GetBookById(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	books, err := b.Service.GetBookById(id)
+	book, err := b.Service.GetBookById(id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return fiber.ErrNotFound
@@ -50,7 +50,7 @@ func (b *BookHandler) GetBookById(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"code":    1,
 		"message": "detail of book",
-		"data":    books,
+		"data":    book,
 	})
 }
 
@@ -71,6 +71,63 @@ func (b *BookHandler) Create(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"code":    1,
 		"message": "success insert new book",
+		"data":    request,
+	})
+}
+
+func (b *BookHandler) Delete(c *fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return fiber.ErrBadRequest
+	}
+
+	_, err = b.Service.GetBookById(id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fiber.ErrNotFound
+		} else {
+			return fiber.ErrInternalServerError
+		}
+	}
+
+	if err := b.Service.Delete(id); err != nil {
+		return fiber.ErrInternalServerError
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"code":    1,
+		"message": "success delete a book",
+		"data":    nil,
+	})
+}
+
+func (b *BookHandler) Update(c *fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return fiber.ErrBadRequest
+	}
+
+	_, err = b.Service.GetBookById(id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fiber.ErrNotFound
+		} else {
+			return fiber.ErrInternalServerError
+		}
+	}
+
+	request := new(models.BookRequest)
+	if err := c.BodyParser(request); err != nil {
+		return fiber.ErrBadRequest
+	}
+
+	if err := b.Service.Update(id, request); err != nil {
+		return fiber.ErrInternalServerError
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"code":    1,
+		"message": "success Update a book",
 		"data":    request,
 	})
 }
