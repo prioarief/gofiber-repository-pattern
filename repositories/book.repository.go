@@ -1,12 +1,12 @@
 package repositories
 
 import (
+	"context"
 	"database/sql"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/prioarief/gofiber-repository-pattern/entities"
 	"github.com/prioarief/gofiber-repository-pattern/models"
-	"golang.org/x/net/context"
 )
 
 // type BookRepository interface {
