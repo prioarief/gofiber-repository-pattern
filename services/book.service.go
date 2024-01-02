@@ -5,6 +5,7 @@ import (
 	"github.com/prioarief/gofiber-repository-pattern/models"
 	"github.com/prioarief/gofiber-repository-pattern/models/converter"
 	"github.com/prioarief/gofiber-repository-pattern/repositories"
+	"golang.org/x/net/context"
 )
 
 // type BookService interface {
@@ -25,8 +26,8 @@ func NewBookService(r *repositories.BookRepository, validate *validator.Validate
 	return &BookService{Repository: r, Validate: validate}
 }
 
-func (s *BookService) List() ([]models.BookResponse, error) {
-	books, err := s.Repository.List()
+func (s *BookService) List(ctx context.Context) ([]models.BookResponse, error) {
+	books, err := s.Repository.List(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -39,8 +40,8 @@ func (s *BookService) List() ([]models.BookResponse, error) {
 	return newBooks, nil
 }
 
-func (s *BookService) Get(id int) (*models.BookResponse, error) {
-	book, err := s.Repository.Get(id)
+func (s *BookService) Get(ctx context.Context, id int) (*models.BookResponse, error) {
+	book, err := s.Repository.Get(ctx, id)
 	if err != nil {
 		return &models.BookResponse{}, err
 	}
@@ -48,12 +49,12 @@ func (s *BookService) Get(id int) (*models.BookResponse, error) {
 	return converter.BookConverter(&book), nil
 }
 
-func (s *BookService) Create(request *models.BookRequest) error {
+func (s *BookService) Create(ctx context.Context, request *models.BookRequest) error {
 	if err := s.Validate.Struct(request); err != nil {
 		return err
 	}
 
-	err := s.Repository.Create(request)
+	err := s.Repository.Create(ctx, request)
 	if err != nil {
 		return err
 	}
@@ -61,8 +62,8 @@ func (s *BookService) Create(request *models.BookRequest) error {
 	return nil
 }
 
-func (s *BookService) Delete(id int) error {
-	err := s.Repository.Delete(id)
+func (s *BookService) Delete(ctx context.Context, id int) error {
+	err := s.Repository.Delete(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -70,12 +71,12 @@ func (s *BookService) Delete(id int) error {
 	return nil
 }
 
-func (s *BookService) Update(id int, request *models.BookRequest) error {
+func (s *BookService) Update(ctx context.Context, id int, request *models.BookRequest) error {
 	if err := s.Validate.Struct(request); err != nil {
 		return err
 	}
 
-	err := s.Repository.Update(id, request)
+	err := s.Repository.Update(ctx, id, request)
 	if err != nil {
 		return err
 	}

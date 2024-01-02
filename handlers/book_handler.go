@@ -20,7 +20,7 @@ func NewBookHandler(s *services.BookService) *BookHandler {
 }
 
 func (b *BookHandler) List(c *fiber.Ctx) error {
-	books, err := b.Service.List()
+	books, err := b.Service.List(c.UserContext())
 	if err != nil {
 		return fiber.ErrInternalServerError
 	}
@@ -38,7 +38,7 @@ func (b *BookHandler) Get(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	book, err := b.Service.Get(id)
+	book, err := b.Service.Get(c.UserContext(), id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return fiber.ErrNotFound
@@ -62,7 +62,7 @@ func (b *BookHandler) Create(c *fiber.Ctx) error {
 		// return &fiber.Error{Message: "Opppss", Code: 400}
 	}
 
-	err := b.Service.Create(request)
+	err := b.Service.Create(c.UserContext(), request)
 	if err != nil {
 		return fiber.ErrBadRequest
 		// return &fiber.Error{Message: err.Error(), Code: 400}
@@ -81,7 +81,7 @@ func (b *BookHandler) Delete(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	_, err = b.Service.Get(id)
+	_, err = b.Service.Get(c.UserContext(), id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return fiber.ErrNotFound
@@ -90,7 +90,7 @@ func (b *BookHandler) Delete(c *fiber.Ctx) error {
 		}
 	}
 
-	if err := b.Service.Delete(id); err != nil {
+	if err := b.Service.Delete(c.UserContext(), id); err != nil {
 		return fiber.ErrInternalServerError
 	}
 
@@ -107,7 +107,7 @@ func (b *BookHandler) Update(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	_, err = b.Service.Get(id)
+	_, err = b.Service.Get(c.UserContext(), id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return fiber.ErrNotFound
@@ -121,7 +121,7 @@ func (b *BookHandler) Update(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	if err := b.Service.Update(id, request); err != nil {
+	if err := b.Service.Update(c.UserContext(), id, request); err != nil {
 		return fiber.ErrInternalServerError
 	}
 
