@@ -7,6 +7,7 @@ import (
 	"github.com/prioarief/gofiber-repository-pattern/models"
 	"github.com/prioarief/gofiber-repository-pattern/models/converter"
 	"github.com/prioarief/gofiber-repository-pattern/repositories"
+	"github.com/sirupsen/logrus"
 )
 
 // type BookService interface {
@@ -21,10 +22,11 @@ import (
 type BookService struct {
 	Repository *repositories.BookRepository
 	Validate   *validator.Validate
+	Log        *logrus.Logger
 }
 
-func NewBookService(r *repositories.BookRepository, validate *validator.Validate) *BookService {
-	return &BookService{Repository: r, Validate: validate}
+func NewBookService(r *repositories.BookRepository, validate *validator.Validate, log *logrus.Logger) *BookService {
+	return &BookService{Repository: r, Validate: validate, Log: log}
 }
 
 func (s *BookService) List(ctx context.Context) ([]models.BookResponse, error) {
@@ -52,11 +54,13 @@ func (s *BookService) Get(ctx context.Context, id int) (*models.BookResponse, er
 
 func (s *BookService) Create(ctx context.Context, request *models.BookRequest) error {
 	if err := s.Validate.Struct(request); err != nil {
+		s.Log.WithError(err).Error("failed to validate request body")
 		return err
 	}
 
 	err := s.Repository.Create(ctx, request)
 	if err != nil {
+		s.Log.WithError(err).Error("failed to insert new data")
 		return err
 	}
 
@@ -66,6 +70,7 @@ func (s *BookService) Create(ctx context.Context, request *models.BookRequest) e
 func (s *BookService) Delete(ctx context.Context, id int) error {
 	err := s.Repository.Delete(ctx, id)
 	if err != nil {
+		s.Log.WithError(err).Error("failed to delete data")
 		return err
 	}
 
@@ -74,11 +79,13 @@ func (s *BookService) Delete(ctx context.Context, id int) error {
 
 func (s *BookService) Update(ctx context.Context, id int, request *models.BookRequest) error {
 	if err := s.Validate.Struct(request); err != nil {
+		s.Log.WithError(err).Error("failed to validate request body")
 		return err
 	}
 
 	err := s.Repository.Update(ctx, id, request)
 	if err != nil {
+		s.Log.WithError(err).Error("failed to update data")
 		return err
 	}
 
