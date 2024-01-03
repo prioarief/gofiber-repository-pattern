@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/spf13/viper"
 )
 
@@ -12,6 +13,8 @@ func NewFiber(config *viper.Viper) *fiber.App {
 		AppName:      config.GetString("APP_NAME"),
 		ErrorHandler: NewErrorHandler(),
 	})
+
+	app.Use(recover.New())
 
 	return app
 }
