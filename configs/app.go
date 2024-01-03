@@ -9,6 +9,7 @@ import (
 	"github.com/prioarief/gofiber-repository-pattern/repositories"
 	"github.com/prioarief/gofiber-repository-pattern/routers"
 	"github.com/prioarief/gofiber-repository-pattern/services"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -17,6 +18,7 @@ type BootstrapConfig struct {
 	App      *fiber.App
 	Config   *viper.Viper
 	Validate *validator.Validate
+	Log      *logrus.Logger
 }
 
 func Bootstrap(config *BootstrapConfig) {
@@ -24,10 +26,10 @@ func Bootstrap(config *BootstrapConfig) {
 	bookRepository := repositories.NewBookRepository(config.DB)
 
 	// setup services
-	bookService := services.NewBookService(bookRepository, config.Validate)
+	bookService := services.NewBookService(bookRepository, config.Validate, config.Log)
 
 	// setup handler
-	bookHandler := handlers.NewBookHandler(bookService)
+	bookHandler := handlers.NewBookHandler(bookService, config.Log)
 
 	// setup route
 	routeConfig := routers.RouteConfig{
