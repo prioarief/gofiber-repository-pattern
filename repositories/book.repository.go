@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/prioarief/gofiber-repository-pattern/entities"
 	"github.com/prioarief/gofiber-repository-pattern/models"
 )
@@ -29,7 +28,7 @@ func NewBookRepository(db *sql.DB) *BookRepository {
 func (r *BookRepository) List(ctx context.Context) ([]entities.Book, error) {
 	rows, err := r.DB.QueryContext(ctx, "SELECT * FROM books")
 	if err != nil {
-		return nil, fiber.ErrInternalServerError
+		return nil, err
 	}
 
 	defer rows.Close()

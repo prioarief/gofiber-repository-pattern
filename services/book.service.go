@@ -32,6 +32,7 @@ func NewBookService(r *repositories.BookRepository, validate *validator.Validate
 func (s *BookService) List(ctx context.Context) ([]models.BookResponse, error) {
 	books, err := s.Repository.List(ctx)
 	if err != nil {
+		s.Log.WithError(err).Error("failed get book lists")
 		return nil, err
 	}
 
@@ -46,6 +47,7 @@ func (s *BookService) List(ctx context.Context) ([]models.BookResponse, error) {
 func (s *BookService) Get(ctx context.Context, id int) (*models.BookResponse, error) {
 	book, err := s.Repository.Get(ctx, id)
 	if err != nil {
+		s.Log.WithError(err).Error("failed get book detail")
 		return &models.BookResponse{}, err
 	}
 
