@@ -25,6 +25,10 @@ func NewFiber(config *viper.Viper) *fiber.App {
 
 	// app.Get("/monitor", monitor.New())
 
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello World!")
+	})
+
 	return app
 }
 

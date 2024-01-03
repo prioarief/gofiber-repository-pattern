@@ -9,6 +9,9 @@
 - Viper (Configuration) : https://github.com/spf13/viper
 - Go Playground Validator (Validation) : https://github.com/go-playground/validator
 
+## Development Tools
+- air (hot reload) https://github.com/cosmtrek/air
+
 ## How to install
 ```bash
 go get .
