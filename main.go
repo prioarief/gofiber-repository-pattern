@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/prioarief/gofiber-repository-pattern/configs"
 )
@@ -13,6 +14,11 @@ func main() {
 	validate := configs.NewValidator(viperConfig)
 	log := configs.NewLogger(viperConfig)
 
+	port, err := strconv.Atoi(viperConfig.GetString("APP_PORT"))
+	if err != nil {
+		log.WithError(err).Error("cannot get APP PORT")
+	}
+
 	configs.Bootstrap(&configs.BootstrapConfig{
 		App:      app,
 		DB:       db,
@@ -21,5 +27,5 @@ func main() {
 		Log:      log,
 	})
 
-	log.Fatal(app.Listen(fmt.Sprintf(":%d", viperConfig.GetInt("port"))))
+	log.Fatal(app.Listen(fmt.Sprintf(":%d", port)))
 }
