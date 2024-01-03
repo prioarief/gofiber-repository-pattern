@@ -38,6 +38,7 @@ func (b *BookHandler) List(c *fiber.Ctx) error {
 func (b *BookHandler) Get(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
+		b.Log.WithError(err).Error("failed parse param id")
 		return fiber.ErrBadRequest
 	}
 
@@ -82,6 +83,7 @@ func (b *BookHandler) Create(c *fiber.Ctx) error {
 func (b *BookHandler) Delete(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
+		b.Log.WithError(err).Error("failed parse param id")
 		return fiber.ErrBadRequest
 	}
 
@@ -108,6 +110,7 @@ func (b *BookHandler) Delete(c *fiber.Ctx) error {
 func (b *BookHandler) Update(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
+		b.Log.WithError(err).Error("failed parse param id")
 		return fiber.ErrBadRequest
 	}
 
@@ -122,6 +125,7 @@ func (b *BookHandler) Update(c *fiber.Ctx) error {
 
 	request := new(models.BookRequest)
 	if err := c.BodyParser(request); err != nil {
+		b.Log.WithError(err).Error("failed to proses request")
 		return fiber.ErrBadRequest
 	}
 
