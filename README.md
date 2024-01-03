@@ -16,3 +16,9 @@
 ```bash
 go get .
 ```
+
+## Run with air (hot reload)
+```bash
+air
+```
+
