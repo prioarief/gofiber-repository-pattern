@@ -51,7 +51,7 @@ func (s *BookService) Get(ctx context.Context, id int) (*models.BookResponse, er
 		return &models.BookResponse{}, err
 	}
 
-	return converter.BookConverter(&book), nil
+	return converter.BookConverter(book), nil
 }
 
 func (s *BookService) Create(ctx context.Context, request *models.BookRequest) error {

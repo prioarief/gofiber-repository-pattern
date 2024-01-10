@@ -45,15 +45,15 @@ func (r *BookRepository) List(ctx context.Context) ([]entities.Book, error) {
 	return books, nil
 }
 
-func (r *BookRepository) Get(ctx context.Context, id int) (entities.Book, error) {
+func (r *BookRepository) Get(ctx context.Context, id int) (*entities.Book, error) {
 	var book entities.Book
 
 	row := r.DB.QueryRow("SELECT * FROM books WHERE id = ?", id)
 	if err := row.Scan(&book.Id, &book.Title, &book.Description, &book.Price); err != nil {
-		return entities.Book{}, err
+		return nil, err
 	}
 
-	return book, nil
+	return &book, nil
 }
 
 func (r *BookRepository) Create(ctx context.Context, request *models.BookRequest) error {
