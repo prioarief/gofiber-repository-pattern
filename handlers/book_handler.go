@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"database/sql"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -44,11 +43,7 @@ func (b *BookHandler) Get(c *fiber.Ctx) error {
 
 	book, err := b.Service.Get(c.UserContext(), id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return fiber.ErrNotFound
-		} else {
-			return fiber.ErrInternalServerError
-		}
+		return fiber.ErrNotFound
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -89,11 +84,7 @@ func (b *BookHandler) Delete(c *fiber.Ctx) error {
 
 	_, err = b.Service.Get(c.UserContext(), id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return fiber.ErrNotFound
-		} else {
-			return fiber.ErrInternalServerError
-		}
+		return fiber.ErrInternalServerError
 	}
 
 	if err := b.Service.Delete(c.UserContext(), id); err != nil {
@@ -112,15 +103,6 @@ func (b *BookHandler) Update(c *fiber.Ctx) error {
 	if err != nil {
 		b.Log.WithError(err).Error("failed parse param id")
 		return fiber.ErrBadRequest
-	}
-
-	_, err = b.Service.Get(c.UserContext(), id)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return fiber.ErrNotFound
-		} else {
-			return fiber.ErrInternalServerError
-		}
 	}
 
 	request := new(models.BookRequest)

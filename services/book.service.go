@@ -4,34 +4,31 @@ import (
 	"context"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/prioarief/gofiber-repository-pattern/entities"
 	"github.com/prioarief/gofiber-repository-pattern/helpers"
 	"github.com/prioarief/gofiber-repository-pattern/models"
 	"github.com/prioarief/gofiber-repository-pattern/models/converter"
 	"github.com/prioarief/gofiber-repository-pattern/repositories"
 	"github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
-
-// type BookService interface {
-// 	List() ([]entities.Book, error)
-// 	Get(id int) (entities.Book, error)
-// }
-
-// type bookService struct {
-// 	repository *repositories.BookRepository
-// }
 
 type BookService struct {
 	Repository *repositories.BookRepository
 	Validate   *validator.Validate
 	Log        *logrus.Logger
+	DB         *gorm.DB
 }
 
-func NewBookService(r *repositories.BookRepository, validate *validator.Validate, log *logrus.Logger) *BookService {
-	return &BookService{Repository: r, Validate: validate, Log: log}
+func NewBookService(r *repositories.BookRepository, validate *validator.Validate, log *logrus.Logger, db *gorm.DB) *BookService {
+	return &BookService{Repository: r, Validate: validate, Log: log, DB: db}
 }
 
 func (s *BookService) List(ctx context.Context) ([]models.BookResponse, error) {
-	books, err := s.Repository.List(ctx)
+	tx := s.DB.WithContext(ctx)
+	defer tx.Rollback()
+
+	books, err := s.Repository.List(tx)
 	if err != nil {
 		s.Log.WithError(err).Error("failed get book lists")
 		return nil, err
@@ -46,7 +43,12 @@ func (s *BookService) List(ctx context.Context) ([]models.BookResponse, error) {
 }
 
 func (s *BookService) Get(ctx context.Context, id int) (*models.BookResponse, error) {
-	book, err := s.Repository.Get(ctx, id)
+	tx := s.DB.WithContext(ctx)
+	defer tx.Rollback()
+
+	book := new(entities.Book)
+
+	err := s.Repository.Get(tx, id, book)
 	if err != nil {
 		s.Log.WithError(err).Error("failed get book detail")
 		return nil, err
@@ -62,7 +64,16 @@ func (s *BookService) Create(ctx context.Context, request *models.BookRequest) e
 		return err
 	}
 
-	err := s.Repository.Create(ctx, request)
+	tx := s.DB.WithContext(ctx)
+	defer tx.Rollback()
+
+	newRequest := &entities.Book{
+		Title:       request.Title,
+		Description: request.Description,
+		Price:       request.Price,
+	}
+
+	err := s.Repository.Create(tx, newRequest)
 	if err != nil {
 		s.Log.WithError(err).Error("failed to insert new data")
 		return err
@@ -72,7 +83,17 @@ func (s *BookService) Create(ctx context.Context, request *models.BookRequest) e
 }
 
 func (s *BookService) Delete(ctx context.Context, id int) error {
-	err := s.Repository.Delete(ctx, id)
+	tx := s.DB.WithContext(ctx)
+	defer tx.Rollback()
+
+	book := new(entities.Book)
+	err := s.Repository.Get(tx, id, book)
+	if err != nil {
+		s.Log.WithError(err).Error("failed get book detail")
+		return err
+	}
+
+	err = s.Repository.Delete(tx, book)
 	if err != nil {
 		s.Log.WithError(err).Error("failed to delete data")
 		return err
@@ -88,7 +109,21 @@ func (s *BookService) Update(ctx context.Context, id int, request *models.BookRe
 		return err
 	}
 
-	err := s.Repository.Update(ctx, id, request)
+	tx := s.DB.WithContext(ctx)
+	defer tx.Rollback()
+
+	book := new(entities.Book)
+	err := s.Repository.Get(tx, id, book)
+	if err != nil {
+		s.Log.WithError(err).Error("failed get book detail")
+		return err
+	}
+
+	book.Title = request.Title
+	book.Description = request.Description
+	book.Price = request.Price
+
+	err = s.Repository.Update(tx, id, book)
 	if err != nil {
 		s.Log.WithError(err).Error("failed to update data")
 		return err

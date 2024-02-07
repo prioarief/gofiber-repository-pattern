@@ -10,9 +10,10 @@ import (
 func main() {
 	viperConfig := configs.NewViper()
 	app := configs.NewFiber(viperConfig)
-	db := configs.NewDatabase(viperConfig)
+	// db := configs.NewDatabase(viperConfig)
 	validate := configs.NewValidator(viperConfig)
 	log := configs.NewLogger(viperConfig)
+	db := configs.GormConfiguration(viperConfig, log)
 
 	port, err := strconv.Atoi(viperConfig.GetString("APP_PORT"))
 	if err != nil {

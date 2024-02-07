@@ -1,8 +1,6 @@
 package configs
 
 import (
-	"database/sql"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/prioarief/gofiber-repository-pattern/handlers"
@@ -11,10 +9,11 @@ import (
 	"github.com/prioarief/gofiber-repository-pattern/services"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"gorm.io/gorm"
 )
 
 type BootstrapConfig struct {
-	DB       *sql.DB
+	DB       *gorm.DB
 	App      *fiber.App
 	Config   *viper.Viper
 	Validate *validator.Validate
@@ -26,7 +25,7 @@ func Bootstrap(config *BootstrapConfig) {
 	bookRepository := repositories.NewBookRepository(config.DB)
 
 	// setup services
-	bookService := services.NewBookService(bookRepository, config.Validate, config.Log)
+	bookService := services.NewBookService(bookRepository, config.Validate, config.Log, config.DB)
 
 	// setup handler
 	bookHandler := handlers.NewBookHandler(bookService, config.Log)
