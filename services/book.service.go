@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/prioarief/gofiber-repository-pattern/helpers"
 	"github.com/prioarief/gofiber-repository-pattern/models"
 	"github.com/prioarief/gofiber-repository-pattern/models/converter"
 	"github.com/prioarief/gofiber-repository-pattern/repositories"
@@ -48,14 +49,15 @@ func (s *BookService) Get(ctx context.Context, id int) (*models.BookResponse, er
 	book, err := s.Repository.Get(ctx, id)
 	if err != nil {
 		s.Log.WithError(err).Error("failed get book detail")
-		return &models.BookResponse{}, err
+		return nil, err
 	}
 
 	return converter.BookConverter(book), nil
 }
 
 func (s *BookService) Create(ctx context.Context, request *models.BookRequest) error {
-	if err := s.Validate.Struct(request); err != nil {
+	// if err := s.Validate.Struct(request); err != nil {
+	if err := helpers.ValidationError(s.Validate, request); err != nil {
 		s.Log.WithError(err).Error("failed to validate request body")
 		return err
 	}
@@ -80,7 +82,8 @@ func (s *BookService) Delete(ctx context.Context, id int) error {
 }
 
 func (s *BookService) Update(ctx context.Context, id int, request *models.BookRequest) error {
-	if err := s.Validate.Struct(request); err != nil {
+	// if err := s.Validate.Struct(request); err != nil {
+	if err := helpers.ValidationError(s.Validate, request); err != nil {
 		s.Log.WithError(err).Error("failed to validate request body")
 		return err
 	}

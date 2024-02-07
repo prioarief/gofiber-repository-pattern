@@ -62,15 +62,15 @@ func (b *BookHandler) Create(c *fiber.Ctx) error {
 	request := new(models.BookRequest)
 
 	if err := c.BodyParser(request); err != nil {
-		b.Log.WithError(err).Error("failed to proses request")
+		b.Log.WithError(err).Error("failed to process request")
 		return fiber.ErrBadRequest
 		// return &fiber.Error{Message: "Opppss", Code: 400}
 	}
 
 	err := b.Service.Create(c.UserContext(), request)
 	if err != nil {
-		return fiber.ErrBadRequest
-		// return &fiber.Error{Message: err.Error(), Code: 400}
+		// return fiber.ErrBadRequest
+		return &fiber.Error{Message: err.Error(), Code: 400}
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -125,7 +125,7 @@ func (b *BookHandler) Update(c *fiber.Ctx) error {
 
 	request := new(models.BookRequest)
 	if err := c.BodyParser(request); err != nil {
-		b.Log.WithError(err).Error("failed to proses request")
+		b.Log.WithError(err).Error("failed to process request")
 		return fiber.ErrBadRequest
 	}
 
