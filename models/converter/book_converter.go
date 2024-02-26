@@ -7,9 +7,10 @@ import (
 
 func BookConverter(book *entities.Book) *models.BookResponse {
 	return &models.BookResponse{
-		ID:          book.Id,
-		Title:       book.Title,
-		Description: book.Description,
-		Price:       book.Price,
+		ID:           book.Id,
+		Title:        book.Title,
+		Description:  book.Description,
+		Price:        book.Price,
+		CategoryName: book.Category.Name,
 	}
 }

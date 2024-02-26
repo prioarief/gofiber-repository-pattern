@@ -1,10 +1,11 @@
 package models
 
 type BookResponse struct {
-	ID          int    `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Price       int    `json:"price"`
+	ID           int    `json:"id"`
+	Title        string `json:"title"`
+	Description  string `json:"description"`
+	Price        int    `json:"price"`
+	CategoryName string `json:"category_name"`
 }
 
 type BookRequest struct {

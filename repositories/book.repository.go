@@ -24,16 +24,23 @@ func NewBookRepository(db *gorm.DB) *BookRepository {
 
 func (r *BookRepository) List(db *gorm.DB) ([]entities.Book, error) {
 	var books []entities.Book
-	if err := db.Find(&books).Error; err != nil {
+	// if err := db.Find(&books).Error; err != nil {
+	if err := db.Preload("Category").Find(&books).Error; err != nil {
 		return nil, err
 	}
+
+	// sql := db.ToSQL(func(tx *gorm.DB) *gorm.DB {
+	// 	return tx.Preload("Category").Find(&books)
+	// })
+
+	// fmt.Println(sql)
 
 	return books, nil
 }
 
 func (r *BookRepository) Get(db *gorm.DB, id int, book *entities.Book) error {
 
-	if err := db.Where("id = ?", id).First(book).Error; err != nil {
+	if err := db.Where("id = ?", id).Preload("Category").First(book).Error; err != nil {
 		return err
 	}
 
