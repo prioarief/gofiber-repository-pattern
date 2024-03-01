@@ -22,9 +22,22 @@ func NewBookHandler(s *services.BookService, log *logrus.Logger) *BookHandler {
 }
 
 func (b *BookHandler) List(c *fiber.Ctx) error {
-	books, err := b.Service.List(c.UserContext())
+	categoryId := c.QueryInt("category_id")
+	keyword := c.Query("keyword")
+
+	filter := &models.BookFilter{
+		CategoryId: &categoryId,
+		Keyword:    &keyword,
+	}
+
+	if err := c.QueryParser(filter); err != nil {
+		b.Log.WithError(err).Error("failed to process request")
+		return fiber.ErrBadRequest
+	}
+
+	books, err := b.Service.List(c.UserContext(), filter)
 	if err != nil {
-		return fiber.ErrInternalServerError
+		return err
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{

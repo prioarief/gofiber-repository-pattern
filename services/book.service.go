@@ -24,11 +24,16 @@ func NewBookService(r *repositories.BookRepository, validate *validator.Validate
 	return &BookService{Repository: r, Validate: validate, Log: log, DB: db}
 }
 
-func (s *BookService) List(ctx context.Context) ([]models.BookResponse, error) {
+func (s *BookService) List(ctx context.Context, filter *models.BookFilter) ([]models.BookResponse, error) {
 	tx := s.DB.WithContext(ctx)
 	defer tx.Rollback()
 
-	books, err := s.Repository.List(tx)
+	if err := helpers.ValidationError(s.Validate, filter); err != nil {
+		s.Log.WithError(err).Error("failed to validate request query params")
+		return nil, err
+	}
+
+	books, err := s.Repository.List(tx, filter)
 	if err != nil {
 		s.Log.WithError(err).Error("failed get book lists")
 		return nil, err

@@ -13,3 +13,8 @@ type BookRequest struct {
 	Description string `json:"description" validate:"required"`
 	Price       int    `json:"price" validate:"required,number,gte=1000"`
 }
+
+type BookFilter struct {
+	CategoryId *int    `json:"category_id" validate:"omitempty,gte=0"`
+	Keyword    *string `json:"keyword" validate:"omitempty"`
+}

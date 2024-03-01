@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"github.com/prioarief/gofiber-repository-pattern/entities"
+	"github.com/prioarief/gofiber-repository-pattern/models"
 	"gorm.io/gorm"
 )
 
@@ -22,18 +23,21 @@ func NewBookRepository(db *gorm.DB) *BookRepository {
 	return &BookRepository{DB: db}
 }
 
-func (r *BookRepository) List(db *gorm.DB) ([]entities.Book, error) {
+func (r *BookRepository) List(db *gorm.DB, filter *models.BookFilter) ([]entities.Book, error) {
 	var books []entities.Book
-	// if err := db.Find(&books).Error; err != nil {
-	if err := db.Preload("Category").Find(&books).Error; err != nil {
-		return nil, err
+	query := db.Preload("Category")
+
+	if *filter.CategoryId != 0 {
+		query.Where("category_id = ?", &filter.CategoryId)
 	}
 
-	// sql := db.ToSQL(func(tx *gorm.DB) *gorm.DB {
-	// 	return tx.Preload("Category").Find(&books)
-	// })
+	if *filter.Keyword != "" {
+		query.Where("title LIKE ?", "%"+*filter.Keyword+"%")
+	}
 
-	// fmt.Println(sql)
+	if err := query.Find(&books).Error; err != nil {
+		return nil, err
+	}
 
 	return books, nil
 }
